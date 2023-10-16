@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct {
     char *codVendedor;
@@ -10,29 +11,64 @@ typedef struct {
     double valVenda;
 } Pessoa;
 
-void processarDados(Pessoa *vendedor);
+void obterVendedor(char *linha, Pessoa *vendedor);
+void liberarMemoria(Pessoa *vendedor);
 
-int main() {
-    Pessoa vendedor;
-    char linha[256];
-
-    while (fgets(linha, sizeof(linha), stdin)) {
-        sscanf(linha, "%m[^,], %m[^,], %m[^,], %m[^,], %m[^,], %lf", &vendedor.codVendedor, &vendedor.nome, &vendedor.cargo, &vendedor.codEquipe, &vendedor.codVenda, &vendedor.valVenda);
-        processarDados(&vendedor);
-        free(vendedor.codVendedor);
-        free(vendedor.nome);
-        free(vendedor.cargo);
-        free(vendedor.codEquipe);
-        free(vendedor.codVenda);
+void obterVendedor(char *linha, Pessoa *vendedor) {
+    char *token = strtok(linha, ";");
+    if (token != NULL) {
+        vendedor->codVendedor = strdup(token);
+        printf("%s, ", vendedor->codVendedor);
     }
-
-    return 0;
+    token = strtok(NULL, ";");
+    if (token != NULL) {
+        vendedor->nome = strdup(token);
+        printf("%s, ", vendedor->nome);
+    }
+    token = strtok(NULL, ";");
+    if (token != NULL) {
+        vendedor->cargo = strdup(token);
+        printf("%s, ", vendedor->cargo);
+    }
+    token = strtok(NULL, ";");
+    if (token != NULL) {
+        vendedor->codEquipe = strdup(token);
+        printf("%s, ", vendedor->codEquipe);
+    }
+    token = strtok(NULL, ";");
+    if (token != NULL) {
+        vendedor->codVenda = strdup(token);
+        printf("%s", vendedor->codVenda);
+    }
+    token = strtok(NULL, ";");
+    if (token != NULL) {
+        vendedor->valVenda = atof(token);
+        
+        // Realizar cálculos com base no cargo
+        if (strcmp(vendedor->cargo, "junior") == 0) {
+            vendedor->valVenda += vendedor->valVenda * 0.01;
+        } else if (strcmp(vendedor->cargo, "pleno") == 0) {
+            vendedor->valVenda += vendedor->valVenda * 0.02;
+        } else if (strcmp(vendedor->cargo, "senior") == 0) {
+            vendedor->valVenda += vendedor->valVenda * 0.04;
+        } else if (strcmp(vendedor->cargo, "gerente") == 0) {
+            vendedor->valVenda += vendedor->valVenda * 0.05;
+        }
+        
+        printf(", %.2lf\n", vendedor->valVenda);
+    }
 }
 
-void processarDados(Pessoa *vendedor) {
-    // Implemente a lógica de processamento dos dados aqui.
-    // Por exemplo, você pode somar 2% ao valor da venda.
-    vendedor->valVenda *= 1.02;
-    // E, em seguida, imprimir os dados processados.
-    printf("%s, %s, %s, %s, %s, %.2lf\n", vendedor->codVendedor, vendedor->nome, vendedor->cargo, vendedor->codEquipe, vendedor->codVenda, vendedor->valVenda);
+
+void liberarMemoria(Pessoa *vendedor) {
+    free(vendedor->codVendedor);
+    free(vendedor->nome);
+    free(vendedor->cargo);
+    free(vendedor->codEquipe);
+    free(vendedor->codVenda);
+    free(vendedor);
+}
+
+int main() {
+    return 0;
 }

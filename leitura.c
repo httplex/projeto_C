@@ -2,80 +2,31 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct {
-    char *codVendedor;
-    char *nome;
-    char *cargo;
-    char *codEquipe;
-    char *codVenda;
-    double valVenda;
-} Pessoa;
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        printf("%s", argv[0]);
+        return 1;
+    }
 
-void obterVendedor(char *linha, Pessoa *vendedor);
-void liberarMemoria(Pessoa *vendedor);
-
-void obterVendedor(char *linha, Pessoa *vendedor) {
-    char *token = strtok(linha, ";");
-    if (token != NULL) {
-        vendedor->codVendedor = strdup(token);
-        printf("%s, ", vendedor->codVendedor);
-    }
-    token = strtok(NULL, ";");
-    if (token != NULL) {
-        vendedor->nome = strdup(token);
-        printf("%s, ", vendedor->nome);
-    }
-    token = strtok(NULL, ";");
-    if (token != NULL) {
-        vendedor->cargo = strdup(token);
-        printf("%s, ", vendedor->cargo);
-    }
-    token = strtok(NULL, ";");
-    if (token != NULL) {
-        vendedor->codEquipe = strdup(token);
-        printf("%s, ", vendedor->codEquipe);
-    }
-    token = strtok(NULL, ";");
-    if (token != NULL) {
-        vendedor->codVenda = strdup(token);
-        printf("%s", vendedor->codVenda);
-    }
-    token = strtok(NULL, ";");
-    if (token != NULL) {
-        vendedor->valVenda = atof(token);
-        printf(", %.2lf\n", vendedor->valVenda);
-    }
-}
-
-void lerArquivoCSV(char *nomeArquivo) {
+    char *nomeArquivo = argv[1];
     FILE *arquivo = fopen(nomeArquivo, "r");
+
     if (arquivo == NULL) {
         perror("Erro ao abrir o arquivo");
-        return;
+        return 1;
     }
 
-    char linha[256]; 
-    Pessoa *vendedor = (Pessoa *)malloc(sizeof(Pessoa));
-
+    char linha[256];
     while (fgets(linha, sizeof(linha), arquivo) != NULL) {
-        obterVendedor(linha, vendedor);
+        // Processar cada linha do arquivo CSV aqui
+        for (int i = 0; i < strlen(linha); i++) {
+            if (linha[i] == ',') {
+                linha[i] = ' '; // Substituir ';' por espaço em branco
+            }
+        }
+        printf("%s", linha);
     }
 
     fclose(arquivo);
-    liberarMemoria(vendedor);
-}
-
-void liberarMemoria(Pessoa *vendedor) {
-    free(vendedor->codVendedor);
-    free(vendedor->nome);
-    free(vendedor->cargo);
-    free(vendedor->codEquipe);
-    free(vendedor->codVenda);
-    free(vendedor);
-}
-
-int main() {
-    char nomeArquivo[] = "vendas.csv";
-    lerArquivoCSV(nomeArquivo);
     return 0;
 }
